@@ -71,7 +71,7 @@ jobs:
         # 检查关键游戏函数
         grep -q 'function step()' index.html || exit 1
         grep -q 'function draw()' index.html || exit 1
-        grep -q 'function startGame()' index.html || exit 1
+        grep -q 'function start()' index.html || exit 1
         echo "✅ Game function validation passed"
 
     - name: Markdown validation
