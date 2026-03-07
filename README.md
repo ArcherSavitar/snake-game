@@ -112,3 +112,5 @@ python build_release.py
 本项目基于 MIT 许可证开源 - 查看 [LICENSE](LICENSE) 文件了解详情。
 
 *最后更新: 2026-03-07*
+
+*已配置GitHub Pages自动部署*
