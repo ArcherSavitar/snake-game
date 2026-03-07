@@ -34,7 +34,7 @@ git add .
 git commit -m "Initial commit: Snake game with Python server, Android wrapper, and build scripts"
 
 # 6. 关联远程仓库
-git remote add origin https://github.com/<your-username>/snake-game.git
+git remote add origin https://github.com/ArcherSavitar/snake-game.git
 
 # 7. 推送代码
 git push -u origin main
