@@ -15,7 +15,6 @@
 | Android 应用 | ✅ 完成 | WebView 封装 |
 | 构建脚本 | ✅ 完成 | PyInstaller 打包 |
 | 代码审计 | ✅ 完成 | 详细报告可用 |
-| GitHub 托管 | 📋 方案完成 | 参见 [GitHub托管方案.md](GitHub托管方案.md) |
 
 ## 🚀 快速开始
 
@@ -81,15 +80,6 @@ pip install pyinstaller
 python build_release.py
 ```
 
-## 🤝 贡献
-
-项目已准备就绪，可通过以下步骤开源：
-
-1. **实施 GitHub 托管方案**：按照 [GitHub托管方案.md](GitHub托管方案.md) 配置
-2. **清理敏感信息**：运行 `bash cleanup_check.sh`
-3. **初始化 Git 仓库**：参见方案中的详细步骤
-4. **配置 CI/CD**：GitHub Actions 工作流已准备
-
 ## 📊 代码质量
 
 项目已完成全面审计，关键指标：
@@ -112,12 +102,5 @@ python build_release.py
 ## 📄 许可证
 
 本项目基于 MIT 许可证开源 - 查看 [LICENSE](LICENSE) 文件了解详情。
-
-## 📞 联系
-
-项目托管方案已完整制定，准备实施。如需帮助或有疑问，请参考详细的托管方案文档。
-
----
-*让贪吃蛇游戏在 GitHub 上获得新生！ 🐍*
 
 *最后更新: 2026-03-07*
