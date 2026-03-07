@@ -6,6 +6,14 @@
 
 一个跨平台的贪吃蛇游戏，支持 Web 浏览器、Windows 桌面和 Android 移动设备。
 
+## 🌐 在线演示
+
+**点击即可直接体验最新构建版本，无需本地安装：**
+
+👉 **[https://ArcherSavitar.github.io/snake-game/](https://ArcherSavitar.github.io/snake-game/)**
+
+> 注意：首次加载可能需要几秒钟时间，请确保网络连接正常。
+
 ## 📋 项目状态
 
 | 模块 | 状态 | 说明 |

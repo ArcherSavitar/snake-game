@@ -1,0 +1,146 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Test HTML syntax
+      run: |
+        # 验证HTML基本结构
+        grep -q '<!DOCTYPE html>' index.html || exit 1
+        grep -q '<canvas' index.html || exit 1
+        echo "✅ HTML structure validation passed"
+
+    - name: Test Python server
+      run: |
+        # 测试Python服务器启动
+        python3 -c "
+        import http.server
+        import socketserver
+        import threading
+        import time
+        import urllib.request
+
+        handler = http.server.SimpleHTTPRequestHandler
+        server = socketserver.TCPServer(('127.0.0.1', 0), handler)
+        _, port = server.server_address
+
+        thread = threading.Thread(target=server.serve_forever)
+        thread.daemon = True
+        thread.start()
+
+        time.sleep(1)
+
+        try:
+            resp = urllib.request.urlopen(f'http://127.0.0.1:{port}/index.html')
+            if resp.getcode() == 200:
+                print('✅ HTTP server test passed')
+                server.shutdown()
+            else:
+                print('❌ Server returned non-200 status')
+                exit(1)
+        except Exception as e:
+            print(f'❌ Server test failed: {e}')
+            exit(1)
+        "
+
+    - name: Validate game functions
+      run: |
+        # 检查关键游戏函数
+        grep -q 'function step()' index.html || exit 1
+        grep -q 'function draw()' index.html || exit 1
+        grep -q 'function startGame()' index.html || exit 1
+        echo "✅ Game function validation passed"
+
+    - name: Markdown validation
+      run: |
+        # 检查README格式
+        if [ -f "validate_readme.py" ]; then
+          python3 validate_readme.py || exit 1
+        else
+          echo "⚠️  validate_readme.py not found, skipping"
+        fi
+
+  deploy:
+    needs: test
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+
+    - name: Prepare deployment files
+      run: |
+        # 创建构建目录
+        mkdir -p _site
+
+        # 复制游戏主文件
+        cp index.html _site/
+
+        # 创建404.html用于SPA路由
+        cat > _site/404.html << 'EOF'
+        <!DOCTYPE html>
+        <html lang="zh-CN">
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>贪吃蛇游戏 - 页面未找到</title>
+          <script>
+            // 保存原始URL用于重定向
+            sessionStorage.redirect = location.href;
+            // 重定向到主页面
+            window.location.replace('/snake-game/');
+          </script>
+          <meta http-equiv="refresh" content="0;URL='/snake-game/'">
+        </head>
+        <body>
+          <p>正在重定向到贪吃蛇游戏主页面...</p>
+          <p>如果未自动跳转，请 <a href="/snake-game/">点击这里</a>。</p>
+        </body>
+        </html>
+        EOF
+
+        # 可选：添加部署信息文件
+        echo "Deployed at $(date)" > _site/deploy-info.txt
+        echo "Repository: ${{ github.repository }}" >> _site/deploy-info.txt
+        echo "Commit: ${{ github.sha }}" >> _site/deploy-info.txt
+
+        # 列出部署文件
+        echo "📁 Deployment files:"
+        ls -la _site/
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: '_site'
+
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2
