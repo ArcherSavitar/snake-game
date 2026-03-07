@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p .github/workflows)",
+      "Bash(mkdir -p .github/ISSUE_TEMPLATE)"
+    ]
+  }
+}

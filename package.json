@@ -1,0 +1,14 @@
+{
+  "name": "snake-game",
+  "version": "1.0.0",
+  "description": "Cross-platform Snake game",
+  "scripts": {
+    "format": "prettier --write *.html *.css *.js",
+    "lint": "eslint *.js",
+    "test": "echo 'No tests yet'"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  }
+}

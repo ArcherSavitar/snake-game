@@ -1,0 +1,46 @@
+name: Android Build Test
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'android_project/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'android_project/**'
+
+jobs:
+  android-build-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Validate Android project structure
+      run: |
+        test -f "android_project/app/src/main/AndroidManifest.xml" || exit 1
+        test -f "android_project/app/src/main/java/com/snakegame/app/MainActivity.java" || exit 1
+        test -d "android_project/app/src/main/assets" || exit 1
+        echo "✓ Android project structure valid"
+
+    - name: Check for local.properties
+      run: |
+        if [ -f "android_project/local.properties" ]; then
+          echo "⚠️ WARNING: local.properties file detected. This should not be committed."
+          echo "Contents:"
+          cat android_project/local.properties
+          exit 1
+        else
+          echo "✓ No local.properties file (good)"
+        fi
+
+    - name: Validate game HTML in assets
+      run: |
+        # 检查assets中的index.html是否与根目录一致
+        if [ -f "android_project/app/src/main/assets/index.html" ]; then
+          echo "✓ Found index.html in assets"
+          # 简单验证
+          grep -q "<!DOCTYPE html>" android_project/app/src/main/assets/index.html || exit 1
+        else
+          echo "ℹ️ Note: No index.html in assets (may need to copy)"
+        fi
