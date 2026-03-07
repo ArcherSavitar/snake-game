@@ -85,27 +85,21 @@ jobs:
 
   deploy:
     needs: test
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup Pages
-      uses: actions/configure-pages@v3
-
     - name: Prepare deployment files
       run: |
         # 创建构建目录
-        mkdir -p _site
+        mkdir -p dist
 
         # 复制游戏主文件
-        cp index.html _site/
+        cp index.html dist/
 
         # 创建404.html用于SPA路由
-        cat > _site/404.html << 'EOF'
+        cat > dist/404.html << 'EOF'
         <!DOCTYPE html>
         <html lang="zh-CN">
         <head>
@@ -127,20 +121,20 @@ jobs:
         </html>
         EOF
 
-        # 可选：添加部署信息文件
-        echo "Deployed at $(date)" > _site/deploy-info.txt
-        echo "Repository: ${{ github.repository }}" >> _site/deploy-info.txt
-        echo "Commit: ${{ github.sha }}" >> _site/deploy-info.txt
+        # 添加部署信息文件
+        echo "Deployed at $(date)" > dist/deploy-info.txt
+        echo "Repository: ${{ github.repository }}" >> dist/deploy-info.txt
+        echo "Commit: ${{ github.sha }}" >> dist/deploy-info.txt
 
         # 列出部署文件
         echo "📁 Deployment files:"
-        ls -la _site/
-
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
-      with:
-        path: '_site'
+        ls -la dist/
 
     - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v2
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+        publish_branch: gh-pages
+        keep_files: false
+        force_orphan: true
