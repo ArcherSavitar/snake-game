@@ -39,4 +39,12 @@ public class MainActivity extends Activity {
             super.onBackPressed();
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        if (mWebView != null) {
+            mWebView.destroy();
+        }
+        super.onDestroy();
+    }
 }
