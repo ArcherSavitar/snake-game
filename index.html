@@ -17,13 +17,14 @@ canvas{background:#000;border:1px solid #333;max-width:100%;max-height:100%;box-
 #controls{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);width:190px;height:190px;display:none;z-index:20}
 @media (pointer:coarse){#controls{display:block}}
 @media (orientation:landscape) and (max-height:500px){body{padding:0 20px;gap:20px}#sidebar{width:100px;gap:10px}#game-container{max-width:calc(100% - 100px - 40px)}#controls{transform:translateY(50%) scale(.85);bottom:50%;left:auto;right:calc(20px + env(safe-area-inset-right,0px))}}
-@media (max-width:600px){body{flex-direction:column;padding:12px;gap:12px}#sidebar{width:100%;flex-direction:row;justify-content:space-between;align-items:center;gap:8px}#score-panel{font-size:16px;padding:4px}#button-panel{flex-direction:row;gap:8px}button{padding:10px 14px;font-size:13px;min-height:40px}#game-container{max-width:100%;flex:1;width:100%}#controls{bottom:calc(10px + env(safe-area-inset-bottom,0px))}}
+@media (max-width:600px){body{flex-direction:column;padding:12px;gap:12px}#sidebar{width:100%;flex-direction:row;justify-content:space-between;align-items:center;gap:8px}#score-panel{font-size:16px;padding:4px}#button-panel{flex-direction:row;gap:8px}button{padding:10px 14px;font-size:13px;min-height:40px}#game-container{position:relative;max-width:100%;flex:1;width:100%;padding-bottom:210px;box-sizing:border-box}#controls{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);top:auto}}
 .d-pad-btn{position:absolute;width:62px;height:62px;min-width:44px;min-height:44px;border-radius:50%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-size:30px;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-tap-highlight-color:transparent;transition:transform .08s,background .08s}
 .d-pad-btn:active,.d-pad-btn.active{background:rgba(255,255,255,.3);transform:scale(.92)}
 .btn-up{top:0;left:64px}.btn-down{bottom:0;left:64px}.btn-left{top:64px;left:0}.btn-right{top:64px;right:0}
 </style>
 </head>
 <body>
+<div id="game-container"><canvas id="game" tabindex="0" style="outline:none"></canvas></div>
 <div id="sidebar">
   <div id="score-panel">得分: <span id="score">0</span></div>
   <div id="button-panel">
@@ -32,7 +33,6 @@ canvas{background:#000;border:1px solid #333;max-width:100%;max-height:100%;box-
     <button id="end" class="hidden secondary">结束游戏</button>
   </div>
 </div>
-<div id="game-container"><canvas id="game" tabindex="0" style="outline:none"></canvas></div>
 <div id="controls">
   <div class="d-pad-btn btn-up" data-k="ArrowUp">↑</div>
   <div class="d-pad-btn btn-left" data-k="ArrowLeft">←</div>
