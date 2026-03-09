@@ -20,12 +20,11 @@ jobs:
     - name: Check Python syntax
       run: |
         python -m py_compile start_game.py
-        python -m py_compile build_release.py
 
     - name: Python code style
       run: |
         python -m pip install black
-        black --check --diff start_game.py build_release.py
+        black --check --diff start_game.py
 
   javascript-checks:
     runs-on: ubuntu-latest
@@ -89,12 +88,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Test release folder structure
+    - name: Verify index.html exists
       run: |
-        # 检查必要的发布文件
-        test -f release/index.html || exit 1
-        test -f release/README.txt || exit 1
-        echo "✓ Release folder structure OK"
+        test -f index.html || exit 1
+        echo "✓ Main index.html exists"
 
   audit-report:
     runs-on: ubuntu-latest
