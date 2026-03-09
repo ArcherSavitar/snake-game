@@ -18,9 +18,10 @@ button{padding:8px 6px;border:0;border-radius:6px;background:var(--p);color:#fff
 /* 方向键容器 - 固定在页面底部中央，在游戏区域外部 */
 #controls{position:fixed;left:50%;bottom:var(--dpad-bottom);transform:translateX(-50%);width:calc(var(--dpad-size)*2 + var(--dpad-gap)*3);height:calc(var(--dpad-size)*2 + var(--dpad-gap)*3);display:none;z-index:35}
 /* 触摸设备：显示方向键，游戏区域底部留出空间 */
+/* 使用svh(小视口高度)确保兼容移动浏览器地址栏 */
 @media (pointer:coarse),(hover:none){
   #controls{display:grid;grid-template-columns:var(--dpad-size) var(--dpad-size) var(--dpad-size);grid-template-rows:var(--dpad-size) var(--dpad-size) var(--dpad-size);gap:var(--dpad-gap);justify-items:center;align-items:center}
-  #game-container{left:4px;bottom:calc(var(--dpad-size)*2 + var(--dpad-gap)*3 + var(--dpad-bottom) + 12px)}
+  #game-container{left:4px;bottom:max(calc(var(--dpad-size)*2 + var(--dpad-gap)*3 + var(--dpad-bottom) + 12px),calc(40px + 4svh))}
 }
 @media (max-width:400px){
   :root{--sidebar-width:70px;--dpad-size:42px;--dpad-gap:4px;--dpad-bottom:2px}
