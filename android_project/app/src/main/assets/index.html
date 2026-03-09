@@ -1,22 +1,45 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>贪吃蛇</title>
 <style>
-:root{--bg:#111;--fg:#eee;--p:#2d7ef7;--s:#444}*{box-sizing:border-box}
+:root{--bg:#111;--fg:#eee;--p:#2d7ef7;--s:#444;--dpad-size:52px;--dpad-gap:6px;--dpad-bottom:4px}*{box-sizing:border-box}
 body{margin:0;width:100vw;height:100vh;overflow:hidden;color:var(--fg);background:var(--bg);font-family:system-ui,"Segoe UI",Arial,sans-serif;display:flex;flex-direction:column;align-items:center;gap:12px;touch-action:none}
-header{padding:12px 0;font-weight:600;flex-shrink:0}#hud{display:flex;gap:16px;align-items:center;flex-shrink:0;z-index:10}
-button{padding:8px 12px;border:0;border-radius:6px;background:var(--p);color:#fff;cursor:pointer}button.secondary{background:var(--s)}
+header{padding:12px 0;font-weight:600;flex-shrink:0}
+#hud{display:flex;gap:16px;align-items:center;flex-shrink:0;z-index:10}
+button{padding:8px 12px;border:0;border-radius:6px;background:var(--p);color:#fff;cursor:pointer;font-size:12px;min-width:44px;min-height:40px;transition:transform .15s}
+button:active{transform:scale(.95)}
+button.secondary{background:var(--s)}
 #game-container{position:relative;width:100%;height:100%;flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden}
 canvas{background:#000;border:1px solid #333;max-width:98%;max-height:98%;box-shadow:0 0 20px rgba(0,0,0,.5)}
-#controls{position:relative;width:190px;height:190px;display:none;z-index:20;flex-shrink:0}
-@media (pointer:coarse){#controls{display:block}}
-@media (orientation:landscape) and (max-height:500px){body{flex-direction:row;padding:0 20px;gap:20px}header{display:none}#hud{flex-direction:column;align-items:flex-start;gap:10px}#game-container{flex:1;height:100%}#controls{transform:scale(.85)}}
-.d-pad-btn{position:absolute;width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-size:30px;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-tap-highlight-color:transparent;transition:transform .08s,background .08s}
-.d-pad-btn:active,.d-pad-btn.active{background:rgba(255,255,255,.3);transform:scale(.92)}
-.btn-up{top:0;left:64px}.btn-down{bottom:0;left:64px}.btn-left{top:64px;left:0}.btn-right{top:64px;right:0}
+#controls{position:relative;width:calc(var(--dpad-size)*2 + var(--dpad-gap)*3);height:calc(var(--dpad-size)*2 + var(--dpad-gap)*3);display:none;z-index:20;flex-shrink:0}
+@media (pointer:coarse),(hover:none){
+  #controls{display:grid;grid-template-columns:var(--dpad-size) var(--dpad-size) var(--dpad-size);grid-template-rows:var(--dpad-size) var(--dpad-size) var(--dpad-size);gap:var(--dpad-gap);justify-items:center;align-items:center}
+}
+@media (max-width:400px){
+  :root{--dpad-size:42px;--dpad-gap:4px;--dpad-bottom:2px}
+  header{padding:10px 0;font-size:14px}
+  #hud{gap:10px}
+  button{font-size:10px;min-height:36px}
+}
+@media (orientation:landscape) and (max-height:500px){
+  body{flex-direction:row;padding:0 20px;gap:20px}
+  header{display:none}
+  #hud{flex-direction:column;align-items:flex-start;gap:10px}
+  #game-container{flex:1;height:100%}
+  #controls{transform:scale(.85)}
+}
+.d-pad-btn{width:var(--dpad-size);height:var(--dpad-size);min-width:44px;min-height:44px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.9);font-size:20px;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-tap-highlight-color:transparent;transition:background .1s,transform .08s}
+.d-pad-btn:active,.d-pad-btn.active{background:rgba(255,255,255,.35);transform:scale(.92)}
+#controls .btn-up{grid-column:2;grid-row:1}
+#controls .btn-left{grid-column:1;grid-row:2}
+#controls .btn-right{grid-column:3;grid-row:2}
+#controls .btn-down{grid-column:2;grid-row:3}
+@media (max-width:400px){
+  .d-pad-btn{font-size:18px}
+}
 </style>
 </head>
 <body>
@@ -36,27 +59,32 @@ canvas{background:#000;border:1px solid #333;max-width:98%;max-height:98%;box-sh
 </div>
 <script>
 const T={s:"开始",r:"运行中",rs:"重新开始",p:"暂停",c:"继续",g:"游戏结束"};
+const SCALE=0.92;
 const canvas=document.getElementById("game"),ctx=canvas.getContext("2d"),scoreEl=document.getElementById("score"),startBtn=document.getElementById("start"),pauseBtn=document.getElementById("pause"),restartBtn=document.getElementById("restart"),controls=document.getElementById("controls"),gameContainer=document.getElementById("game-container");
-let cellSize=20,cols=20,rows=20,snake=[],dir={x:1,y:0},nextDir={x:1,y:0},food=null,score=0,started=false,paused=false,speed=120,timerId=null;
+let cellSize=20,cols=20,rows=20,snake=[],dir={x:1,y:0},nextDir={x:1,y:0},food=null,score=0,started=false,paused=false,speed=120,timerId=null,gameState="initial";
+let debounceTimer=null;
+const debounce=(fn,delay)=>{clearTimeout(debounceTimer);debounceTimer=setTimeout(fn,delay)};
+const showButtons=(state)=>{debounce(()=>{if(state==="initial"){startBtn.classList.remove("hidden");pauseBtn.classList.add("hidden")}else if(state==="running"){startBtn.classList.add("hidden");pauseBtn.classList.remove("hidden");pauseBtn.textContent=T.p}else if(state==="paused"){startBtn.classList.add("hidden");pauseBtn.classList.remove("hidden");pauseBtn.textContent=T.c}},100)};
 const randomCell=()=>({x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)});
 function placeFood(){do{food=randomCell()}while(snake.some((s)=>s.x===food.x&&s.y===food.y))}
 function drawCell(x,y,color){ctx.fillStyle=color;ctx.fillRect(x*cellSize,y*cellSize,cellSize-1,cellSize-1)}
 function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);if(!food||snake.length===0)return;drawCell(food.x,food.y,"#e74c3c");snake.forEach((p,i)=>drawCell(p.x,p.y,i===0?"#2ecc71":"#27ae60"))}
-function reset(drawNow=true){snake=[{x:Math.floor(cols/2),y:Math.floor(rows/2)}];dir={x:1,y:0};nextDir=dir;score=0;speed=120;paused=false;started=false;placeFood();scoreEl.textContent=String(score);pauseBtn.textContent=T.p;startBtn.textContent=T.s;if(drawNow)draw()}
-function stop(gameOver=false){if(timerId){clearTimeout(timerId);timerId=null}started=false;if(gameOver){ctx.fillStyle="white";ctx.font="30px Arial";ctx.textAlign="center";ctx.fillText(T.g,canvas.width/2,canvas.height/2);startBtn.textContent=T.rs}}
+function reset(drawNow=true){snake=[{x:Math.floor(cols/2),y:Math.floor(rows/2)}];dir={x:1,y:0};nextDir=dir;score=0;speed=120;paused=false;started=false;gameState="initial";placeFood();scoreEl.textContent="0";pauseBtn.textContent=T.p;startBtn.textContent=T.s;if(drawNow)draw()}
+function stop(gameOver=false){if(timerId){clearTimeout(timerId);timerId=null}started=false;if(gameOver){ctx.fillStyle="white";ctx.font="24px Arial";ctx.textAlign="center";ctx.fillText(T.g,canvas.width/2,canvas.height/2);startBtn.textContent=T.rs}else{startBtn.textContent=T.s}}
 function step(){dir=nextDir;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};const hitWall=head.x<0||head.y<0||head.x>=cols||head.y>=rows;const hitBody=snake.some((p)=>p.x===head.x&&p.y===head.y);if(hitWall||hitBody){stop(true);return}snake.unshift(head);if(head.x===food.x&&head.y===food.y){score+=10;scoreEl.textContent=String(score);placeFood();if(speed>60)speed-=4}else{snake.pop()}draw()}
 function scheduleStep(){timerId=setTimeout(()=>{step();if(started&&!paused)scheduleStep()},speed)}
-function start(){if(started)return;started=true;paused=false;startBtn.textContent=T.r;pauseBtn.textContent=T.p;scheduleStep();canvas.focus()}
-function togglePause(){if(!started)return;paused=!paused;pauseBtn.textContent=paused?T.c:T.p;if(!paused&&!timerId)scheduleStep()}
+function startGame(){if(started)return;started=true;paused=false;gameState="running";startBtn.textContent=T.r;pauseBtn.textContent=T.p;scheduleStep();canvas.focus()}
+function togglePause(){if(!started)return;paused=!paused;gameState=paused?"paused":"running";pauseBtn.textContent=paused?T.c:T.p;if(!paused&&!timerId)scheduleStep()}
 function setDir(nx,ny){const nd={x:nx,y:ny};if(snake.length>1&&snake[1].x===snake[0].x+nd.x&&snake[1].y===snake[0].y+nd.y)return;nextDir=nd}
 function handleInput(k){if(k==="ArrowUp"||k==="w")setDir(0,-1);else if(k==="ArrowDown"||k==="s")setDir(0,1);else if(k==="ArrowLeft"||k==="a")setDir(-1,0);else if(k==="ArrowRight"||k==="d")setDir(1,0);else if(k===" ")togglePause()}
-function resizeGame(){const w=gameContainer.clientWidth,h=gameContainer.clientHeight,target=Math.min(w,h)<400?15:20;cols=Math.max(10,Math.floor(w/target));rows=Math.max(10,Math.floor(h/target));cellSize=target;canvas.width=cols*cellSize;canvas.height=rows*cellSize;if(!started)reset(false);draw()}
+function resizeGame(){const gc=gameContainer;const gw=gc.clientWidth,gh=gc.clientHeight;const target=Math.min(gw,gh)<280?10:20;const w=gw*SCALE,h=gh*SCALE;cols=Math.max(8,Math.floor(w/target));rows=Math.max(8,Math.floor(h/target));cellSize=target;canvas.width=cols*cellSize;canvas.height=rows*cellSize;if(!started)reset(false);draw()}
 document.addEventListener("keydown",(e)=>{if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key))e.preventDefault();handleInput(e.key)});
 controls.addEventListener("click",(e)=>{const k=e.target.closest(".d-pad-btn")?.dataset.k;if(k)handleInput(k)});
 controls.addEventListener("touchstart",(e)=>{e.preventDefault();const t=e.target.closest(".d-pad-btn");if(!t)return;t.classList.add("active");handleInput(t.dataset.k)},{passive:false});
 controls.addEventListener("touchend",(e)=>{const t=e.target.closest(".d-pad-btn");if(t)t.classList.remove("active")});
-startBtn.addEventListener("click",()=>{if(startBtn.textContent===T.rs)reset();if(!started)start()});
-pauseBtn.addEventListener("click",togglePause);restartBtn.addEventListener("click",()=>{stop();reset()});
+startBtn.addEventListener("click",()=>{if(startBtn.textContent===T.rs)reset();if(!started)startGame()});
+pauseBtn.addEventListener("click",()=>togglePause());
+restartBtn.addEventListener("click",()=>{stop();reset()});
 window.addEventListener("resize",()=>{resizeGame();canvas.focus()});
 resizeGame();reset();canvas.focus();
 </script>
