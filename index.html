@@ -17,9 +17,10 @@ button{padding:8px 6px;border:0;border-radius:6px;background:var(--p);color:#fff
 .hidden{opacity:0;pointer-events:none;position:absolute;width:1px;height:1px;overflow:hidden}
 /* 方向键容器 - 固定在页面底部中央，在游戏区域外部 */
 #controls{position:fixed;left:50%;bottom:var(--dpad-bottom);transform:translateX(-50%);width:calc(var(--dpad-size)*2 + var(--dpad-gap)*3);height:calc(var(--dpad-size)*2 + var(--dpad-gap)*3);display:none;z-index:35}
-@media (pointer:coarse){
+/* 触摸设备：显示方向键，游戏区域底部留出空间 */
+@media (pointer:coarse),(hover:none){
   #controls{display:grid;grid-template-columns:var(--dpad-size) var(--dpad-size) var(--dpad-size);grid-template-rows:var(--dpad-size) var(--dpad-size) var(--dpad-size);gap:var(--dpad-gap);justify-items:center;align-items:center}
-  #game-container{bottom:calc(var(--dpad-size)*2 + var(--dpad-gap)*3 + var(--dpad-bottom) + 10px)}
+  #game-container{bottom:calc(var(--dpad-size)*2 + var(--dpad-gap)*3 + var(--dpad-bottom) + 12px)}
 }
 @media (max-width:400px){
   :root{--sidebar-width:70px;--dpad-size:42px;--dpad-gap:4px;--dpad-bottom:12px}
@@ -34,8 +35,7 @@ button{padding:8px 6px;border:0;border-radius:6px;background:var(--p);color:#fff
   #score-panel{font-size:12px}
   #button-panel{width:55px;gap:4px}
   button{font-size:10px;padding:6px 4px;min-height:32px}
-  #controls{position:fixed;left:auto;right:calc(10px + env(safe-area-inset-right,0px));bottom:50%;transform:translateY(-50%);display:grid;grid-template-columns:var(--dpad-size);grid-template-rows:var(--dpad-size) var(--dpad-size) var(--dpad-size);gap:var(--dpad-gap);width:auto;height:auto}
-  #controls .btn-up{grid-column:1;grid-row:1}#controls .btn-left{grid-column:1;grid-row:2}#controls .btn-right{grid-column:1;grid-row:2}#controls .btn-down{grid-column:1;grid-row:3}
+  #controls{position:fixed;left:auto;right:calc(10px + env(safe-area-inset-right,0px));bottom:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:var(--dpad-gap);width:auto;height:auto}
 }
 .d-pad-btn{width:var(--dpad-size);height:var(--dpad-size);min-width:44px;min-height:44px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.9);font-size:20px;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-tap-highlight-color:transparent;transition:background .1s,transform .08s}
 .d-pad-btn:active,.d-pad-btn.active{background:rgba(255,255,255,.35);transform:scale(.92)}
