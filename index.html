@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>贪吃蛇</title>
 <style>
-:root{--bg:#111;--fg:#eee;--p:#2d7ef7;--s:#444;--sidebar-width:85px;--dpad-size:48px;--dpad-gap:6px;--dpad-bottom:20px}*{box-sizing:border-box}
+:root{--bg:#111;--fg:#eee;--p:#2d7ef7;--s:#444;--sidebar-width:85px;--dpad-size:52px;--dpad-gap:6px;--dpad-bottom:10px}*{box-sizing:border-box}
 html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
 body{color:var(--fg);background:var(--bg);font-family:system-ui,"Segoe UI",Arial,sans-serif;touch-action:none;position:relative}
 #game-container{position:absolute;top:0;left:0;right:var(--sidebar-width);bottom:0;display:flex;align-items:center;justify-content:center;padding:0}
@@ -23,7 +23,7 @@ button{padding:8px 6px;border:0;border-radius:6px;background:var(--p);color:#fff
   #game-container{bottom:calc(var(--dpad-size)*2 + var(--dpad-gap)*3 + var(--dpad-bottom) + 12px)}
 }
 @media (max-width:400px){
-  :root{--sidebar-width:70px;--dpad-size:42px;--dpad-gap:4px;--dpad-bottom:12px}
+  :root{--sidebar-width:70px;--dpad-size:42px;--dpad-gap:4px;--dpad-bottom:8px}
   #sidebar{padding-top:10px;gap:10px}
   #score-panel{font-size:13px}
   #button-panel{width:55px}
@@ -63,7 +63,7 @@ button{padding:8px 6px;border:0;border-radius:6px;background:var(--p);color:#fff
 </div>
 <script>
 const T={s:"开始",r:"运行中",p:"暂停",c:"继续",g:"游戏结束",e:"结束"};
-const SCALE=0.85;
+const SCALE=0.92;
 const canvas=document.getElementById("game"),ctx=canvas.getContext("2d"),scoreEl=document.getElementById("score"),startBtn=document.getElementById("start"),pauseBtn=document.getElementById("pause"),endBtn=document.getElementById("end"),controls=document.getElementById("controls"),gameContainer=document.getElementById("game-container");
 let cellSize=20,cols=20,rows=20,snake=[],dir={x:1,y:0},nextDir={x:1,y:0},food=null,score=0,started=false,paused=false,speed=120,timerId=null,gameState="initial";
 let debounceTimer=null;
