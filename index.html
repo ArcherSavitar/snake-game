@@ -136,7 +136,41 @@ settingsBtn.addEventListener("click",()=>alert("设置功能开发中..."));
 const getFullscreenElement=()=>document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement;
 const requestFullscreen=(el)=>{if(el.requestFullscreen)return el.requestFullscreen();if(el.webkitRequestFullscreen)return el.webkitRequestFullscreen();if(el.mozRequestFullScreen)return el.mozRequestFullScreen();if(el.msRequestFullscreen)return el.msRequestFullscreen()};
 const exitFullscreen=()=>{if(document.exitFullscreen)return document.exitFullscreen();if(document.webkitExitFullscreen)return document.webkitExitFullscreen();if(document.mozCancelFullScreen)return document.mozCancelFullScreen();if(document.msExitFullscreen)return document.msExitFullscreen()};
-const updateFullscreenButton=()=>{const isFullscreen=!!getFullscreenElement();fullscreenBtn.textContent=isFullscreen?"退出全屏":"全屏";if(isFullscreen){sidebar.style.display="none";gameContainer.style.right="0"}else{sidebar.style.display="flex";gameContainer.style.right="var(--sidebar-width)"}};
+const updateFullscreenButton=()=>{
+  const isFullscreen=!!getFullscreenElement();
+  fullscreenBtn.textContent=isFullscreen?"退出全屏":"全屏";
+  if(isFullscreen){
+    // 全屏时将侧边栏改为悬浮面板（右上角）
+    sidebar.style.display="flex";
+    sidebar.style.position="fixed";
+    sidebar.style.right="10px";
+    sidebar.style.top="10px";
+    sidebar.style.width="auto";
+    sidebar.style.height="auto";
+    sidebar.style.flexDirection="row";
+    sidebar.style.gap="12px";
+    sidebar.style.padding="8px 12px";
+    sidebar.style.background="rgba(17,17,17,0.9)";
+    sidebar.style.borderRadius="8px";
+    gameContainer.style.right="0";
+    gameContainer.style.bottom="0";
+  }else{
+    // 退出全屏时恢复默认样式
+    sidebar.style.display="flex";
+    sidebar.style.position="fixed";
+    sidebar.style.right="0";
+    sidebar.style.top="0";
+    sidebar.style.width="var(--sidebar-width)";
+    sidebar.style.height="100%";
+    sidebar.style.flexDirection="column";
+    sidebar.style.gap="var(--sidebar-gap)";
+    sidebar.style.paddingTop="16px";
+    sidebar.style.background="rgba(17,17,17,0.98)";
+    sidebar.style.borderRadius="0";
+    gameContainer.style.right="var(--sidebar-width)";
+    gameContainer.style.bottom="";
+  }
+};
 const toggleFullscreen=()=>{if(getFullscreenElement()){exitFullscreen()}else{requestFullscreen(document.documentElement)}};
 fullscreenBtn.addEventListener("click",toggleFullscreen);
 document.addEventListener("fullscreenchange",updateFullscreenButton);
