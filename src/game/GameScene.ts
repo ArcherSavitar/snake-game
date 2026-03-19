@@ -5,6 +5,7 @@ import { Food } from './Food';
 import { InputManager } from '../input/InputManager';
 import { HUD } from '../ui/HUD';
 import { GameOverModal } from '../ui/GameOverModal';
+import { ControlsHint } from '../ui/ControlsHint';
 import { AccessibilityManager } from '../accessibility/AccessibilityManager';
 import { StorageManager } from '../storage/StorageManager';
 
@@ -14,6 +15,7 @@ export class GameScene extends Phaser.Scene {
   private inputManager!: InputManager;
   private hud!: HUD;
   private gameOverModal!: GameOverModal;
+  private controlsHint!: ControlsHint;
   private accessibilityManager!: AccessibilityManager;
   private storageManager!: StorageManager;
 
@@ -127,6 +129,7 @@ export class GameScene extends Phaser.Scene {
     this.hud.updateHighScore(this.storageManager.getHighScore());
 
     this.gameOverModal = new GameOverModal(this);
+    this.controlsHint = new ControlsHint(this);
   }
 
   private setupInput(): void {
@@ -168,6 +171,7 @@ export class GameScene extends Phaser.Scene {
 
     this.hud.updateScore(0);
     this.hud.updateSpeed(this.speed);
+    this.controlsHint.hide();
     this.accessibilityManager.announceGameState('running');
 
     this.scheduleStep();
@@ -314,6 +318,7 @@ export class GameScene extends Phaser.Scene {
 
     this.hud.updateScore(0);
     this.hud.updateSpeed(this.speed);
+    this.controlsHint.show();
 
     this.drawGame();
     this.accessibilityManager.announceGameState('ready');
